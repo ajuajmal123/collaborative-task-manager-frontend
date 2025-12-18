@@ -8,7 +8,7 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const res = await api.get("/users/me");
+      const res = await api.get("/auth/me");
       setName(res.data.name);
       setLoading(false);
     };
@@ -16,7 +16,7 @@ export default function Profile() {
   }, []);
 
   const updateProfile = async () => {
-    await api.put("/users/me", { name });
+    await api.put("/auth/me", { name });
     alert("Profile updated");
   };
 
