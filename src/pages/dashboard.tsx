@@ -9,6 +9,7 @@ import { logout } from "@/lib/auth";
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
 
+
 export default function Dashboard() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -37,6 +38,7 @@ export default function Dashboard() {
   };
 
   return (
+      
     <div className="min-h-screen bg-gray-50">
       {/* TOP BAR */}
       <header className="bg-white border-b">
@@ -75,5 +77,6 @@ export default function Dashboard() {
         <TaskList tasks={tasks || []} />
       </main>
     </div>
+  
   );
 }

@@ -23,6 +23,7 @@ export default function Profile() {
   if (loading) return <p className="p-6">Loading...</p>;
 
   return (
+    
     <div className="p-6 max-w-md mx-auto">
       <h1 className="text-xl font-semibold mb-4">My Profile</h1>
 

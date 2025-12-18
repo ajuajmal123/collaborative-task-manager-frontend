@@ -22,11 +22,10 @@ export default function Home() {
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
-
-  const onSubmit = async (data: LoginForm) => {
-    await api.post("/auth/login", data);
-    router.push("/dashboard");
-  };
+const onSubmit = async (data: LoginForm) => {
+  await api.post("/auth/login", data);
+  window.location.href = "/dashboard";
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

@@ -7,4 +7,5 @@ export const getCurrentUser = async () => {
 
 export const logout = async () => {
   await api.post("/auth/logout");
+  window.location.href = "/";
 };
