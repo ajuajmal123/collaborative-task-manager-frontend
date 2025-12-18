@@ -6,15 +6,16 @@ import { useRouter } from "next/router";
 
 const registerSchema = z
   .object({
-    name: z.string().min(2),
-    email: z.string().email(),
+    name: z.string().min(2, "Name required"),
+    email: z.string().email("Invalid email"),
     password: z.string().min(6),
-    confirmPassword: z.string().min(6),
+    confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine(data => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
+
 
 type RegisterForm = z.infer<typeof registerSchema>;
 

@@ -1,50 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-
-const ACCESS_SECRET = new TextEncoder().encode(
-  process.env.NEXT_PUBLIC_ACCESS_SECRET
-);
-
-const protectedPaths = ["/dashboard","/profile"];
+import { handleUserAuth } from "@/lib/auth-middleware";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const isProtected = protectedPaths.some((path) =>
-    pathname.startsWith(path)
-  );
-
-  const accessToken = req.cookies.get("accessToken")?.value;
-
-  //  PROTECTED ROUTES
-  if (isProtected) {
-    if (!accessToken) {
-      return NextResponse.redirect(
-        new URL("/", req.url)
-      );
-    }
-
-    try {
-      await jwtVerify(accessToken, ACCESS_SECRET);
-      return NextResponse.next();
-    } catch {
-      return NextResponse.redirect(
-        new URL("/", req.url)
-      );
-    }
+  // Skip static & api routes
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api/auth/login") ||
+    pathname.startsWith("/api/auth/logout") ||
+    pathname.startsWith("/api/auth/refresh") ||
+    pathname.includes(".")
+  ) {
+    return NextResponse.next();
   }
 
-  //  AUTH PAGES (login/register)
+  //  Protect dashboard & profile
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/profile")) {
+    return handleUserAuth(req);
+  }
+
+  //  Prevent logged-in users from seeing login/register
   if (pathname === "/" || pathname === "/register") {
-    if (accessToken) {
-      try {
-        await jwtVerify(accessToken, ACCESS_SECRET);
-        return NextResponse.redirect(
-          new URL("/dashboard", req.url)
-        );
-      } catch {
-        return NextResponse.next();
-      }
+    const accessToken = req.cookies.get("accessToken")?.value;
+    const refreshToken = req.cookies.get("refreshToken")?.value;
+
+    if (accessToken || refreshToken) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
   }
 
@@ -52,5 +34,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/", "/register"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico).*)",
+  ],
 };

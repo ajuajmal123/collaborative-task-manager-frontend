@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import api from "@/lib/api";
 import { useUsers } from "@/hooks/useUsers";
+import { useState } from "react";
 
 /**
  * MUST MATCH backend createTaskSchema exactly
@@ -22,6 +23,7 @@ type TaskFormData = z.infer<typeof taskSchema>;
 export default function TaskForm() {
   const queryClient = useQueryClient();
   const { data: users, isLoading } = useUsers();
+const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
@@ -36,17 +38,22 @@ export default function TaskForm() {
   });
 
   const onSubmit = async (data: TaskFormData) => {
+  setServerError(null);
+
+  try {
     const payload = {
       ...data,
-      // backend expects ISO datetime string
       dueDate: new Date(data.dueDate).toISOString(),
     };
 
     await api.post("/tasks", payload);
-
     reset();
-    queryClient.invalidateQueries({ queryKey: ["tasks"] });
-  };
+  } catch (err: any) {
+    setServerError(
+      err.response?.data?.message || "Failed to create task"
+    );
+  }
+};
 
   return (
     <form
