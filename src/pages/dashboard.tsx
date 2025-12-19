@@ -44,18 +44,28 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* TOP BAR */}
-      <header className="bg-white border-b">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
-          <h1 className="text-xl font-semibold">Dashboard</h1>
+   <header className="bg-white border-b">
+  <div className="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+    <h1 className="text-xl font-semibold">Dashboard</h1>
 
-          <button
-            onClick={handleLogout}
-            className="text-sm text-red-600 hover:underline"
-          >
-            Logout
-          </button>
-        </div>
-      </header>
+    <div className="flex items-center gap-4">
+      <a
+        href="/profile"
+        className="text-sm text-indigo-600 hover:underline"
+      >
+        Profile
+      </a>
+
+      <button
+        onClick={handleLogout}
+        className="text-sm text-red-600 hover:underline"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+</header>
+
 
       {/* MAIN CONTENT */}
       <main className="max-w-5xl mx-auto px-4 py-6">
