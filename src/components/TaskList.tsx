@@ -1,13 +1,21 @@
 import { useState } from "react";
-import TaskModal from "./TaskModal";
+import TaskEditModal from "./TaskEditModal";
+type UserRef = {
+  _id: string;
+  name: string;
+};
 
 type Task = {
   _id: string;
   title: string;
-  status: string;
-  priority: string;
+  description?: string;
+  status: "TODO" | "IN_PROGRESS" | "REVIEW" | "COMPLETED";
+  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
   dueDate: string;
+  creatorId: UserRef;
+  assignedToId: UserRef;
 };
+
 
 export default function TaskList({ tasks }: { tasks: Task[] }) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -36,26 +44,23 @@ export default function TaskList({ tasks }: { tasks: Task[] }) {
               </p>
 
               <p className="text-sm text-gray-500">
-                Due: {new Date(task.dueDate).toLocaleDateString()}
+                Due: {new Date(task.dueDate).toLocaleString()}
               </p>
-            </div>
+            </div> 
 
-            {/* ACTIONS */}
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={() => setSelectedTask(task)}
-                className="text-sm text-indigo-600 hover:underline"
-              >
-                View
-              </button>
-            </div>
+           <button
+  onClick={() => setSelectedTask(task)}
+  className="text-sm text-indigo-600"
+>
+  View / Edit
+</button>
+
           </div>
         ))}
       </div>
 
-      {/* MODAL */}
       {selectedTask && (
-        <TaskModal
+        <TaskEditModal
           task={selectedTask}
           onClose={() => setSelectedTask(null)}
         />
