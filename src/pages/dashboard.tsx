@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/router";
 
+import api from "@/lib/api";
 import { useTasks } from "@/hooks/useTasks";
 import { connectSocket, disconnectSocket } from "@/lib/socket";
 import { logout } from "@/lib/auth";
@@ -9,17 +9,19 @@ import { logout } from "@/lib/auth";
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
 
-
 export default function Dashboard() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { data: tasks } = useTasks();
 
   const [showForm, setShowForm] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // Socket.io
+
+  //  Socket connection 
   useEffect(() => {
-    const socket = connectSocket("temp-user-id");
+    if (!userId) return;
+
+    const socket = connectSocket(userId);
 
     socket.on("task:created", () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
@@ -29,16 +31,17 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     });
 
-    return () => disconnectSocket();
-  }, [queryClient]);
+    return () => {
+      disconnectSocket();
+    };
+  }, [userId, queryClient]);
 
   const handleLogout = async () => {
     await logout();
-    router.push("/");
+    window.location.href = "/";
   };
 
   return (
-      
     <div className="min-h-screen bg-gray-50">
       {/* TOP BAR */}
       <header className="bg-white border-b">
@@ -66,7 +69,7 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* TASK FORM (TOGGLED) */}
+        {/* TASK FORM */}
         {showForm && (
           <div className="mb-6">
             <TaskForm />
@@ -77,6 +80,5 @@ export default function Dashboard() {
         <TaskList tasks={tasks || []} />
       </main>
     </div>
-  
   );
 }

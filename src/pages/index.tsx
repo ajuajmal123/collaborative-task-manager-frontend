@@ -2,18 +2,16 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/router";
 import api from "@/lib/api";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -25,17 +23,19 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginForm) => {
-    setServerError(null);
+  setServerError(null);
 
-    try {
-      await api.post("/auth/login", data);
-      router.push("/dashboard");
-    } catch (err: any) {
-      setServerError(
-        err.response?.data?.message || "Login failed"
-      );
-    }
-  };
+  try {
+    await api.post("/auth/login", data);
+    window.location.href = "/dashboard";
+  } catch (err: any) {
+    console.log("LOGIN ERROR:", err.response?.data);
+
+    setServerError(
+      err.response?.data?.message || "Invalid credentials"
+    );
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -43,10 +43,12 @@ export default function LoginPage() {
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white p-6 rounded w-80 space-y-3"
       >
-        <h1 className="text-lg font-semibold">Login</h1>
+        <h1 className="text-lg font-semibold text-center">Login</h1>
 
         {serverError && (
-          <p className="text-red-600 text-sm">{serverError}</p>
+          <p className="text-red-600 text-sm text-center">
+            {serverError}
+          </p>
         )}
 
         <input
@@ -71,10 +73,18 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="btn-primary"
+          className="btn-primary w-full"
         >
-          {isSubmitting ? "Logging in…" : "Login"}
+          {isSubmitting ? "Logging in..." : "Login"}
         </button>
+
+        {/* REGISTER LINK */}
+        <p className="text-sm text-center">
+          Don’t have an account?{" "}
+          <a href="/register" className="text-indigo-600 hover:underline">
+            Register
+          </a>
+        </p>
       </form>
     </div>
   );

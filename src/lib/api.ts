@@ -10,23 +10,28 @@ api.interceptors.response.use(
   async error => {
     const originalRequest = error.config;
 
+    const isAuthRoute =
+      originalRequest.url?.includes("/auth/login") ||
+      originalRequest.url?.includes("/auth/register") ||
+      originalRequest.url?.includes("/auth/refresh");
+
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      !isAuthRoute
     ) {
       originalRequest._retry = true;
 
       try {
-        // attempt refresh
         await api.post("/auth/refresh");
         return api(originalRequest);
       } catch {
-        // refresh failed → force logout
         window.location.href = "/";
         return Promise.reject(error);
       }
     }
 
+    
     return Promise.reject(error);
   }
 );
