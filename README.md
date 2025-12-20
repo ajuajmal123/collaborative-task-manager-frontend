@@ -1,40 +1,226 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Collaborative Task Manager — Frontend
 
-## Getting Started
+## Overview
 
-First, run the development server:
+This repository contains the **frontend application** for the Collaborative Task Manager.
 
-```bash
+It is a **production-ready web client** built with **Next.js (Pages Router) and TypeScript**, providing:
+
+- Secure authentication flow
+- Task management UI (CRUD)
+- Real-time collaboration
+- Responsive dashboard experience
+
+The frontend communicates with the backend REST API and Socket.io server using **HttpOnly cookie-based authentication**.
+
+---
+
+## Tech Stack
+
+- Next.js (Pages Router)
+- TypeScript
+- Tailwind CSS
+- TanStack React Query
+- React Hook Form + Zod
+- Axios
+- Socket.io Client
+
+---
+
+## Architecture
+
+The frontend follows a **modular, hook-driven architecture**:
+
+`# Collaborative Task Manager — Frontend
+
+## Overview
+
+This repository contains the **frontend application** for the Collaborative Task Manager.
+
+It is a **production-ready web client** built with **Next.js (Pages Router) and TypeScript**, providing:
+
+- Secure authentication flow
+- Task management UI (CRUD)
+- Real-time collaboration
+- Responsive dashboard experience
+
+The frontend communicates with the backend REST API and Socket.io server using **HttpOnly cookie-based authentication**.
+
+---
+
+## Tech Stack
+
+- Next.js (Pages Router)
+- TypeScript
+- Tailwind CSS
+- TanStack React Query
+- React Hook Form + Zod
+- Axios
+- Socket.io Client
+
+---
+
+## Architecture
+
+The frontend follows a **modular, hook-driven architecture**:
+
+src/
+├── pages/ # Route-based pages (login, dashboard, profile)
+├── components/ # Reusable UI components
+├── hooks/ # Data fetching & state logic
+├── lib/ # API, auth, socket utilities
+└── middleware.ts # Route protection
+
+
+### Design Principles
+
+- Pages handle layout and composition
+- Hooks manage data fetching and caching
+- Components are stateless and reusable
+- Forms are validated with shared schemas
+- Real-time updates are event-driven
+
+---
+
+## Authentication & Security
+
+- JWT-based authentication using **HttpOnly cookies**
+- No tokens stored in localStorage
+- Protected routes via Next.js middleware
+- Automatic redirect logic:
+  - Unauthenticated users → login page
+  - Authenticated users → dashboard
+
+### Auth Features
+
+- Login & Registration
+- Logout
+- Profile view & update
+- Session persistence via refresh tokens
+
+---
+
+## Task Management
+
+### Task Capabilities
+
+- Create, view, update, and delete tasks
+- Tasks include:
+  - Title
+  - Description
+  - Due date
+  - Priority
+  - Status
+  - Creator
+  - Assignee
+
+### Role-Based UI Rules
+
+- **Creator**
+  - Edit all fields
+  - Reassign task
+  - Delete task
+- **Assignee**
+  - View all task details
+  - Update status only
+- **Other users**
+  - Read-only view
+
+These rules are enforced both in UI and backend.
+
+---
+
+## Real-Time Features (Socket.io)
+
+The frontend connects to the Socket.io server after authentication.
+
+### Live Updates
+
+- Task list updates instantly when:
+  - A task is created
+  - A task is updated
+  - A task is deleted
+
+### Assignment Notifications
+
+- When a task is assigned, the assignee receives an **instant in-app alert**
+- Notifications are handled client-side via Socket.io events
+
+---
+
+## Dashboard Features
+
+- Multiple task views:
+  - Assigned to me
+  - Created by me
+  - Overdue tasks
+- Filtering:
+  - Status
+  - Priority
+- Sorting:
+  - Due date (ascending / descending)
+- Fully responsive layout for mobile and desktop
+
+---
+
+## Forms & Validation
+
+- All forms built using **React Hook Form**
+- Validation powered by **Zod**
+- Inline error messages
+- Server-side errors are surfaced clearly in UI
+
+---
+
+## Environment Variables
+
+Create a `.env.local` file in the project root.
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
+NEXT_PUBLIC_ACCESS_SECRET=secret
+
+Setup Instructions
+
+Clone Repository
+
+git clone https://github.com/ajuajmal123/collaborative-task-manager-frontend.git
+cd collaborative-task-manager-frontend
+
+
+Install Dependencies
+
+npm install
+
+
+Run Development Server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Frontend runs at:
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+http://localhost:3000
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+Integration Notes
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Backend must be running for full functionality
 
-## Learn More
+Socket.io requires backend server to be reachable
 
-To learn more about Next.js, take a look at the following resources:
+Cookies must be enabled in the browser
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+Trade-offs & Assumptions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+React Query used instead of global state libraries
 
-## Deploy on Vercel
+Notifications are session-based (non-persistent)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+UI permissions mirror backend authorization rules
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+Author
+
+Muhammed Ajmal K K
+Full-Stack Developer
+GitHub: https://github.com/ajuajmal123
