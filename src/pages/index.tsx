@@ -27,9 +27,9 @@ export default function LoginPage() {
 
   try {
     await api.post("/auth/login", data);
-   setTimeout(() => {
+  
     window.location.href = "/dashboard";
-  }, 500);
+  
   } catch (err: any) {
     console.log("LOGIN ERROR:", err.response?.data);
 
