@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function proxy(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+  const pathname = req.nextUrl.pathname;
 
-  const accessToken = req.cookies.get("accessToken")?.value;
-
-  // 1️⃣ Skip Next internals & API routes
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
+    pathname.startsWith("/socket.io") || 
     pathname.includes(".")
   ) {
     return NextResponse.next();
   }
 
-  // 2️⃣ Protected routes
+  const accessToken = req.cookies.get("accessToken")?.value;
+
+  // . PROTECTED ROUTES
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/profile")) {
     if (!accessToken) {
       return NextResponse.redirect(new URL("/", req.url));
@@ -22,7 +22,7 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3️⃣ Auth pages (login/register)
+  //  AUTH PAGES
   if (pathname === "/" || pathname === "/register") {
     if (accessToken) {
       return NextResponse.redirect(new URL("/dashboard", req.url));

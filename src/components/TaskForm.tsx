@@ -7,9 +7,7 @@ import api from "@/lib/api";
 import { useUsers } from "@/hooks/useUsers";
 import { useState } from "react";
 
-/**
- * MUST MATCH backend createTaskSchema exactly
- */
+
 const taskSchema = z.object({
   title: z.string().max(100, "Title must be under 100 characters"),
   description: z.string().optional(),

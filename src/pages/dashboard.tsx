@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { useTasks, TaskView } from "@/hooks/useTasks";
+import { useMe } from "@/hooks/useMe";
+import { connectSocket, disconnectSocket } from "@/lib/socket";
 import { logout } from "@/lib/auth";
 
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
+import NotificationPanel from "@/components/NotificationPanel";
 
 export default function Dashboard() {
   const [view, setView] = useState<TaskView>("assigned");
@@ -13,6 +18,9 @@ export default function Dashboard() {
   const [sort, setSort] = useState<"asc" | "desc">("asc");
   const [showForm, setShowForm] = useState(false);
 
+  const queryClient = useQueryClient();
+  const { data: me } = useMe();
+
   const { data: tasks, isLoading } = useTasks({
     view,
     status: status || undefined,
@@ -20,6 +28,39 @@ export default function Dashboard() {
     sort,
   });
 
+  /* ============================
+     REAL-TIME SOCKET INTEGRATION
+     ============================ */
+  useEffect(() => {
+  if (!me?._id) return;
+
+  const socket = connectSocket(me._id);
+
+  socket.on("task:created", () => {
+    queryClient.invalidateQueries({ queryKey: ["tasks"] });
+  });
+
+  socket.on("task:updated", () => {
+    queryClient.invalidateQueries({ queryKey: ["tasks"] });
+  });
+
+  socket.on("task:deleted", () => {
+    queryClient.invalidateQueries({ queryKey: ["tasks"] });
+  });
+
+  
+ return () => {
+  socket.off("task:created");
+  socket.off("task:updated");
+  socket.off("task:deleted");
+  socket.off("notification:taskAssigned");
+};
+}, [me?._id, queryClient]);
+
+
+  /* ============================
+     LOGOUT
+     ============================ */
   const handleLogout = async () => {
     await logout();
     window.location.href = "/";
@@ -127,6 +168,9 @@ export default function Dashboard() {
           <TaskList tasks={tasks || []} />
         )}
       </main>
+
+      {/* REAL-TIME NOTIFICATIONS */}
+      <NotificationPanel />
     </div>
   );
 }
