@@ -91,6 +91,18 @@ src/
   - Unauthenticated users → login page
   - Authenticated users → dashboard
 
+  ## ⚠️ Technical Note: Cross-Domain Cookie Restrictions
+
+This project implements **HttpOnly, Secure, and SameSite=None** JWT cookies, which is the industry standard for secure authentication. 
+
+However, users may experience session persistence issues in the live demo due to **Modern Browser Privacy Restrictions** (specifically Chrome's "Tracking Protection"):
+
+1. **Public Suffix Restriction:** Because the frontend is on `.vercel.app` and the backend is on `.onrender.com`, browsers treat these as completely different "sites."
+2. **Third-Party Cookie Block:** Modern browsers are phasing out cookies sent between different top-level domains to prevent tracking.
+3. **The Solution:** In a true production environment, this is resolved by using a **unified Custom Domain** (e.g., `app.domain.com` and `api.domain.com`). 
+
+**The codebase reflects production-grade security logic** and functions perfectly in environments where first-party cookie isolation is maintained.
+
 ### Auth Features
 
 - Login & Registration
@@ -180,6 +192,7 @@ Create a `.env.local` file in the project root.
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
 NEXT_PUBLIC_ACCESS_SECRET=secret
+NEXT_PUBLIC_API_URL2=http://localhost:5000/api
 
 Setup Instructions
 
