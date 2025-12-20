@@ -11,7 +11,7 @@ export const connectSocket = (userId: string) => {
           userId, 
         },
         withCredentials: true,
-        transports: ["websocket"],
+        transports: ["polling","websocket"],
       }
     );
   }
